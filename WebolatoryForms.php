@@ -19,6 +19,20 @@ class WebolatoryForms {
 	var $form_id = null;
 
     /**
+     * Form action
+     *
+     * @var string
+     */
+	var $form_action = '#';
+
+    /**
+     * Form id
+     *
+     * @var string
+     */
+	var $form_method = 'POST';
+
+    /**
      * Form fields
      *
      * @var array
@@ -52,6 +66,8 @@ class WebolatoryForms {
 				'name'			=> null,
 				'class'			=> null,
 				'value'			=> null,
+				'values'		=> array(),
+				'attributes'	=> array(),
 				'placeholder'	=> null,
 				'required'		=> false,
 				'before'		=> null,
@@ -93,19 +109,70 @@ class WebolatoryForms {
 	public function getFiels( $id, $field_property ) {
 
 		extract( $field_property );
-
 		$required = true === $required ? 'required' : '';
+
+		$filed = $before;
 
 		switch ( $type ) {
 
 			case 'text':
-				return $before . '<input type="text" id="' . $id . '" class="webolatory-form-text ' . $class . '" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '" ' . $required . '>' . $after;
+				$filed .= '<input type="text" id="' . $id . '" class="webolatory-form-text ' . $class . '" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '" ' . $required . '>';
+				break;
+
+			case 'file':
+				$filed .= '<input type="file" id="' . $id . '" class="webolatory-form-text ' . $class . '" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '" ' . $required . '>';
+				break;
+
+			case 'password':
+				$filed .= '<input type="password" id="' . $id . '" class="webolatory-form-password ' . $class . '" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '" ' . $required . '>';
 				break;
 
 			case 'submit':
-				return $before . '<input type="submit" id="' . $id . '" class="webolatory-form-submit ' . $class . '" name="' . $name . '" value="' . $value . '">' . $after;
+				$filed .= '<input type="submit" id="' . $id . '" class="webolatory-form-submit ' . $class . '" name="' . $name . '" value="' . $value . '">';
+				break;
+
+			case 'radio':
+				if ( ! empty( $values ) ) {
+
+					foreach ( $values as $key => $title ) {
+						
+						$checked = $value === $key ? 'checked' : '';
+
+						$filed .= '<span class="webolatory-form-radio-span"><input type="radio" id="' . $id . '" class="webolatory-form-radio ' . $class . '" name="' . $name . '" value="' . $key . '" ' . $checked . '>' . $title . '</span>';
+					}
+				}
+				break;
+
+			case 'select':
+				if ( ! empty( $values ) ) {
+					
+					$size = isset( $attributes['size'] ) ? $attributes['size'] : null;
+					$multiple = isset( $attributes['multiple'] ) && true === $attributes['multiple'] ? 'multiple' : null;
+
+					$filed .= '<select id="' . $id . '" class="webolatory-form-select ' . $class . '" name="' . $name . '" size="' . $size . '" ' . $multiple . '>';
+
+					foreach ( $values as $key => $title ) {
+						
+						$checked = $value === $key ? 'checked' : '';
+
+						$filed .= '<option value="' . $key . '" ' . $checked . '>' . $title . '</option>';
+					}
+
+					$filed .= '</select>';
+				}
+				break;
+
+			case 'textarea':
+				$rows = isset( $attributes['rows'] ) ? $attributes['rows'] : null;
+				$cols = isset( $attributes['cols'] ) ? $attributes['cols'] : null;
+
+				$filed .= '<textarea id="' . $id . '" class="webolatory-form-textarea ' . $class . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
 				break;
 		}
+		
+		$filed .= $after;
+		
+		return $filed;
 	}
 
 	/**
@@ -131,7 +198,7 @@ class WebolatoryForms {
 		ob_start();
 
 		?>
-		<form id="webolatory-form <?php echo $this->form_id; ?>">
+		<form id="webolatory-form <?php echo $this->form_id; ?>" action="<?php echo $this->form_action; ?>" method="<?php echo $this->form_method; ?>">
 			
 			<?php foreach ( $this->form_fields as $field_id => $field_property ) : ?>
 			
