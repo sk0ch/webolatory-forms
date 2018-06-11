@@ -99,14 +99,43 @@ class WebolatoryForms {
 	}
 
 	/**
-	* Get fiels.
+	* Get Field.
+	*
+	* @param string $id Field id.
+	*
+	* @return string in HTML.	
+	*/
+	public function getSingleField( $id ) {
+
+		if ( isset ( $this->form_fields[ $id ] ) ) {
+
+			return $this->getField( $id, $this->form_fields[ $id ] );
+		}
+
+		return false;
+	}
+
+	/**
+	* Show Field.
+	*
+	* @param string $id Field id.
+	*
+	* @return string Display in HTML.	
+	*/
+	public function showSingleField( $id ) {
+
+		echo $this->getSingleField( $id );
+	}
+
+	/**
+	* Get Field.
 	*
 	* @param string $id Field id.
 	* @param string $field_property Field property.
 	*
-	* @return string Display in HTML.	
+	* @return string in HTML.	
 	*/
-	public function getFiels( $id, $field_property ) {
+	public function getField( $id, $field_property ) {
 
 		extract( $field_property );
 		$required = true === $required ? 'required' : '';
@@ -176,7 +205,7 @@ class WebolatoryForms {
 	}
 
 	/**
-	* Show fiels.
+	* Show Fields.
 	*
 	* @param string $id Field id.
 	* @param string $field_property Field property.
@@ -185,7 +214,7 @@ class WebolatoryForms {
 	*/
 	public function showFiels( $id, $field_property ) {
 
-		echo $this->getFiels( $id, $field_property );
+		echo $this->getField( $id, $field_property );
 	}
 
 	/**
